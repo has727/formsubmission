@@ -2,25 +2,23 @@
 {% block title %} I need to say something {% endblock %}
 {% block content %}
     <div class="container">
+        {% if message %}
+            <div class="alert alert-warning">{{ message }}</div>
+        {% endif %}
         <form name="my form" action="/" method="GET">
+            My mood: <br>
+            {% for m in moods %}
+                <input type="radio" name="mood" value="{{ m.status }}">&nbsp;&nbsp;{{ m.status }}&nbsp;&nbsp;&nbsp;&nbsp;
+            {% endfor %}<br>
+            Message board:<br>
+            <textarea name="user_post" rows=3 cols=70 ></textarea><br>
             <label for="user_id"> Your ID: </label>
             <input id="user_id" type="text" name="user_id">
             <label for="user_pass"> Your Password: </label>
             <input id="user_pass" type="password" name="user_pass">
             <input type="submit" value="login">
             <input type="reset" value="reset">
-            <label for="byear">Birth year: </label>
-            <select name="byear">
-                {% for year in years %}
-                    <option value="{{ year }}">{{ year }}</option>
-                {% endfor %}
-            </select><br>
-            <label for="ufcolor">Your favorite color</label>
-            <input type="checkbox" name="fcolor" value="Green">Green
-            <input type="checkbox" name="fcolor" value="Red">Red
-            <input type="checkbox" name="fcolor" value="Blue">Blue
-            <input type="checkbox" name="fcolor" value="Yellow">Yellow
-            <input type="checkbox" name="fcolor" value="Orange">Orange
+
         </form>
         Your ID: {{ urid }}<br><br>
         {% if verified %}
@@ -29,12 +27,38 @@
             <em> Incorrect Password ot User ID </em><br><br>
         {% endif %}
 
-        Your favorite color:
-        {% for c in urfcolor %}
-            {{ c }}&nbsp;&nbsp;
-        {% endfor %}
-        {% for d in yearok %}
-            <p>Your birth year is {{ d }}</p>
-        {% endfor %}
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading" align="center">
+                        <h3> 宝宝心里苦</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <script>
+        function go_delete(id) {
+            var user_pass = document.getElementById('user_pass').value;
+            if (user_pass !=''){
+                var usr = '/' + id + '/' + user_pass;
+                window.location = usr;
+            }
+        }
+    </script>
+
+    {% for p in posts %}
+
+            {% cycle "<div class='row' > <div class='col-md-4'>"  "<div class='col-md-4'>" "<div class='col-md-4'>"%}
+            <div class="panel panel-primary" align="center">
+                <div class="panel-heading" align='center'>[{{ p.nickname }}]觉得{{ p.mood }}</div>
+                <div class="panel-body">{{ p.message|linebreaksbr }}</div>
+                <div class="panel-footer" align="right"><i><small>{{ p.pub_time }}</small></i>
+                    &nbsp;&nbsp;<span class="glyphicon glyphicon-trash" onclick="go_delete({{ p.id }})"></span>
+                </div>
+            </div>
+            </div>
+            {% cycle "" "" "</div>" %}
+        {% endfor %}
 {% endblock %}
